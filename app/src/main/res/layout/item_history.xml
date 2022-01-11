@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@drawable/curved_solid_white"
+    android:layout_margin="@dimen/_5ssp"
+android:id="@+id/item"
+    android:padding="@dimen/_2ssp"
+    android:layout_height="@dimen/_65ssp"
+ >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="@dimen/_50ssp"
+            android:layout_height="@dimen/_50ssp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:src="@drawable/logo">
+
+        </ImageView>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="@dimen/_5ssp"
+            android:layout_marginTop="7dp"
+            android:layout_marginRight="@dimen/_5ssp"
+            android:layout_toEndOf="@+id/logo"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:orientation="horizontal">
+
+            <TextView
+                 android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/_5ssp"
+                android:text="8/1/22022"
+                android:textColor="@color/dark_gray"
+
+                android:textSize="@dimen/_12ssp">
+
+            </TextView>
+
+            <TextView
+                android:id="@+id/Start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/_5ssp"
+                android:text="10.00"
+                android:textColor="@color/dark_gray"
+                android:textSize="@dimen/_12ssp">
+
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="@dimen/_5ssp"
+            android:layout_marginTop="7dp"
+            android:layout_marginRight="@dimen/_5ssp"
+            android:layout_marginBottom="32dp"
+            android:layout_toEndOf="@+id/logo"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/_5ssp"
+                android:text="10.00 min"
+                android:textColor="@color/dark_gray"
+                android:textSize="@dimen/_12ssp">
+
+            </TextView>
+
+            <TextView
+                android:id="@+id/stepe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/_5ssp"
+                android:text="50 step"
+                android:textColor="@color/dark_gray"
+                android:textSize="@dimen/_12ssp">
+
+            </TextView>
+
+            <TextView
+                android:id="@+id/distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/_5ssp"
+                android:text="10 Km"
+                android:textColor="@color/dark_gray"
+                android:textSize="@dimen/_12ssp">
+
+            </TextView>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/delet"
+            android:layout_width="@dimen/_25ssp"
+            android:layout_height="@dimen/_25ssp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:src="@drawable/ic_baseline_delete_24"
+            app:tint="@color/blue">
+
+        </ImageView>
+    </RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

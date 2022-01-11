@@ -3,9 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/main"
     android:layout_height="match_parent"
     android:background="@color/light_gray"
-    tools:context=".MainActivity">
+    tools:context=".Home.MainActivity">
 
 
    <!-- <fragment
@@ -59,6 +60,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/Time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -74,6 +76,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/dis"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_70ssp"
         android:layout_marginLeft="@dimen/_20ssp"
@@ -118,6 +121,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/Distance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -131,7 +135,66 @@
         </TextView>
 
     </LinearLayout>
-    <Button
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_70ssp"
+        android:layout_marginLeft="@dimen/_20ssp"
+        android:layout_marginRight="@dimen/_20ssp"
+        android:layout_marginTop="@dimen/_20ssp"
+        android:background="@drawable/item_back"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dis">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_5ssp"
+            android:layout_marginTop="@dimen/_5ssp"
+            android:layout_marginRight="@dimen/_5ssp"
+            android:gravity="start"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/_20ssp"
+                android:layout_height="@dimen/_20ssp"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/_5ssp"
+                android:src="@drawable/steps"
+                android:tint="@color/dark_gray"
+                app:tint="@color/dark_gray"
+                tools:ignore="UseAppTint">
+
+            </ImageView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Steps"
+                android:textColor="@color/dark_gray"
+                android:textSize="@dimen/_18ssp">
+
+            </TextView>
+        </LinearLayout>
+
+        <TextView
+             android:id="@+id/steps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/_15ssp"
+            android:layout_marginBottom="@dimen/_5ssp"
+            android:fontFamily="@font/noor_bold"
+            android:text="00    KM"
+            android:textColor="@color/blue"
+            android:textSize="@dimen/_18ssp">
+
+        </TextView>
+
+    </LinearLayout>
+    <TextView
          android:id="@+id/Start"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_35ssp"
@@ -140,18 +203,90 @@
         android:background="@drawable/button"
         android:layout_marginRight="@dimen/_20ssp"
         android:layout_marginLeft="@dimen/_20ssp"
+        android:gravity="center"
+        android:textColor="@color/white"
         android:layout_marginBottom="@dimen/_30ssp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-    </Button>
+    </TextView>
     <include
-        android:id="@+id/include"
-        layout="@layout/start_activity"
+        layout="@layout/start_action"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
     </include>
 
+  <!--  <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="240dp"
+        android:id="@+id/start_activity"
+        android:visibility="gone"
+        android:background="@drawable/whight_back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_20ssp"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintBottom_toBottomOf="parent"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/_5ssp"
+                    android:fontFamily="@font/noor_bold"
+                    android:gravity="center"
+                    android:text="End"
+                    android:textSize="@dimen/_15ssp"></TextView>
+
+                <ImageView
+                    android:id="@+id/Stop"
+                    android:layout_width="@dimen/_70ssp"
+                    android:layout_height="@dimen/_70ssp"
+                    android:src="@drawable/stop_icon"></ImageView>
+            </LinearLayout>
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/_5ssp"
+                    android:fontFamily="@font/noor_bold"
+                    android:gravity="center"
+                    android:text="Resume"></TextView>
+
+                <ImageView
+                    android:id="@+id/Resume"
+                    android:layout_width="@dimen/_70ssp"
+                    android:layout_height="@dimen/_70ssp"
+                    android:src="@drawable/resume_icon"></ImageView>
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>-->
 </androidx.constraintlayout.widget.ConstraintLayout>

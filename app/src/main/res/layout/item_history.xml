@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+
     android:background="@drawable/curved_solid_white"
     android:layout_margin="@dimen/_5ssp"
 android:id="@+id/item"

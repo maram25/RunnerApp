@@ -4,14 +4,14 @@ import com.google.gson.annotations.SerializedName;
 
 public class HistoryModel {
 
-    private int Id;
+    private int Id=1;
     private double ToLatitude;
     private double ToLongitude;
     private int TimeTotal;
-    private int Steps;
-    private int Time;
+    private int Steps=50;
+    private int Time=10;
     private String Date;
-    private String Distance;
+    private String Distance="150";
 
     public int getId() {
         return Id;

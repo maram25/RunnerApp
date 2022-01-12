@@ -3,19 +3,19 @@ package com.example.runner.History;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.runner.Constants;
 import com.example.runner.R;
+import com.example.runner.Utils;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HistoryFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class HistoryFragment extends Fragment {
+
+public class HistoryFragment extends Fragment  implements Constants {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -57,6 +57,7 @@ public class HistoryFragment extends Fragment {
         }
     }
 
+    RecyclerView Tripe;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -65,6 +66,13 @@ public class HistoryFragment extends Fragment {
         }
         // Inflate the layout for this fragment
       View root= inflater.inflate(R.layout.fragment_history, container, false);
+        Tripe = root.findViewById(R.id.tripe);
+
+        final HistoryAdapter detailsAdapter = new HistoryAdapter(getContext(), Utils.HistoryModels);
+        Tripe.setLayoutManager(new GridLayoutManager(getContext(), 1));
+        Tripe.setAdapter(detailsAdapter);
+
+
        return  root;
     }
 }

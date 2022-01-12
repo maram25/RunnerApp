@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.example.runner.Constants;
 import com.example.runner.Home.DirectionsJSONParser;
 import com.example.runner.Home.MainActivity;
 import com.example.runner.Home.MapsModel;
@@ -63,7 +64,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class DetailsMapFaragment extends Fragment implements OnMapReadyCallback {
+public class DetailsMapFaragment extends Fragment implements OnMapReadyCallback  , Constants {
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 

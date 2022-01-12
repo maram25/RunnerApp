@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.runner.Constants;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -63,11 +64,16 @@ import com.google.android.gms.tasks.Task;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener ,SensorEventListener {
-
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener ,
+        SensorEventListener  , Constants {
+ /*   SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+    SharedPreferences.Editor editor = sharedPreferences.edit();*/
     ConstraintLayout StartAction;
     TextView Start;
     TextView steps;
@@ -84,16 +90,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LatLng mCenterLatLong;
     LocationModel pickedLocation;
     LatLng mOrigin, mDestination = null, CurrentlatLng;
-
-
     Sensor sensor;
     SensorManager sensorManager;
-
     private double MagnitudePrevious = 0;
     private int stepCount = 0;
     private float Distances = 0;
-
-
 
 
     @Override
@@ -171,6 +172,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View view) {
                 StartAction.setVisibility(View.VISIBLE);
                 Start.setVisibility(View.GONE);
+                StartTimeDate();
+
                 Log.d("StartAction", "StartAction");
                 StartStepSensor();
                 getDistanceRun(stepCount);
@@ -181,16 +184,36 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              /*  editor.putInt("stepCount", stepCount);
-                editor.putFloat("Distance", Distances);*/
-
+                Utils.Distance=Distances;
                 Utils.CountStep=stepCount;
+
+   /*
+                editor.putInt("stepCount", 0);
+                editor.putFloat("Distance", 0);*/
+
                 goToFragment(new HistoryFragment());
 
             }
         });
+
     }
 
+
+    private void StartTimeDate() {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss aaa z");
+        SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("yyyy-MM-dd");
+        //  SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm");
+
+        String dateTime = simpleDateFormat.format(calendar.getTime()).toString();
+        String dateCalande = simpleDateFormatDate.format(calendar.getTime()).toString();
+        String TimeCalendar = simpleDateFormatTime.format(calendar.getTime()).toString();
+
+        Log.d("Date", dateCalande+"");
+        Log.d("Time", TimeCalendar+"");
+        Utils.Date=dateCalande;
+    }
 
     public void goToFragment(Fragment fragment) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -320,13 +343,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
 
@@ -343,20 +359,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .newCameraPosition(cameraPosition));
 
             mLocationMarkerText.setText("Lat : " + location.getLatitude() + "," + "Long : " + location.getLongitude());
-//            LocationModel
-//                    locationModel = new LocationModel(location.getLatitude(), location.getLongitude());
+//            LocationModel locationModel = new LocationModel(location.getLatitude(), location.getLongitude());
 //            Log.e("setLoc", locationModel.getLat() + " , " + location.getLongitude());
 
             startIntentService(location);
-
-
         } else {
             Toast.makeText(getApplicationContext(),
                     "Sorry! unable to create maps", Toast.LENGTH_SHORT)
                     .show();
         }
-
-
     }
 
     @Override
@@ -483,11 +494,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-       /* if (sensorEvent.sensor==sensor)
-        {
-            stepCount=(int)sensorEvent.values[0];
-            steps.setText(stepCount+"step");
-        }*/
         if (sensorEvent!= null){
             float x_acceleration = sensorEvent.values[0];
             float y_acceleration = sensorEvent.values[1];

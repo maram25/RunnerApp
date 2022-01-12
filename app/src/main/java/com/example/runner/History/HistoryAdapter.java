@@ -17,11 +17,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.runner.Details.DetailsMapFaragment;
 import com.example.runner.R;
+import com.example.runner.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder>{
 
     Context context;
     FragmentManager fragmentManager;
+    List<HistoryModel> historyModels = new ArrayList<>();
+
 
     @NonNull
     @Override
@@ -38,6 +44,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                 Blackout( new DetailsMapFaragment());
             }
         });
+        Utils.Ids.put(historyModels.get(position).getId(), historyModels.get(position));
+
 
     }
 

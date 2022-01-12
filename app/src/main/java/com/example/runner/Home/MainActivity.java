@@ -69,7 +69,10 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener ,SensorEventListener {
 
     ConstraintLayout StartAction;
-    TextView Start, steps, Distance, Time;
+    TextView Start;
+    TextView steps;
+    TextView Distance;
+    TextView Time;
     ImageView Stop, Resume;
     FusedLocationProviderClient mFusedLocationClient;
     LocationRequest mLocationRequest;
@@ -80,12 +83,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     Context mContext;
     private LatLng mCenterLatLong;
     LocationModel pickedLocation;
+    LatLng mOrigin, mDestination = null, CurrentlatLng;
+
+
     Sensor sensor;
     SensorManager sensorManager;
 
-    LatLng mOrigin, mDestination = null, CurrentlatLng;
     private double MagnitudePrevious = 0;
-    private Integer stepCount = 0;
+    private int stepCount = 0;
+    private float Distances = 0;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,15 +108,35 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Definations();
         Actions();
         buildGoogleApiClient();
-        if (sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null) {
-            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-            CountSensor=true;
-        }
-         else {
-             steps.setText("0");
-            CountSensor=false;
-        }
 
+
+
+    }
+
+
+    private void StartStepSensor()
+    {
+
+        SensorEventListener stepDetector = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                if (sensorEvent!= null){
+                    float x_acceleration = sensorEvent.values[0];
+                    float y_acceleration = sensorEvent.values[1];
+                    float z_acceleration = sensorEvent.values[2];
+                    double Magnitude = Math.sqrt(x_acceleration*x_acceleration + y_acceleration*y_acceleration + z_acceleration*z_acceleration);
+                    double MagnitudeDelta = Magnitude- MagnitudePrevious;
+                    MagnitudePrevious = Magnitude;
+                    if (MagnitudeDelta > 4){
+                        stepCount++;
+                    }
+                    steps.setText(stepCount+" step");
+                }}
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) {
+            }
+        };
+        sensorManager.registerListener(stepDetector, sensor, SensorManager.SENSOR_DELAY_NORMAL);
 
     }
 
@@ -133,8 +162,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Distance = findViewById(R.id.Distance);
         Time = findViewById(R.id.Time);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-
-
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
     private void Actions() {
@@ -144,17 +172,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 StartAction.setVisibility(View.VISIBLE);
                 Start.setVisibility(View.GONE);
                 Log.d("StartAction", "StartAction");
+                StartStepSensor();
+                getDistanceRun(stepCount);
+
 
             }
         });
         Stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+              /*  editor.putInt("stepCount", stepCount);
+                editor.putFloat("Distance", Distances);*/
+
+                Utils.CountStep=stepCount;
                 goToFragment(new HistoryFragment());
 
             }
         });
     }
+
 
     public void goToFragment(Fragment fragment) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -447,11 +483,63 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
+       /* if (sensorEvent.sensor==sensor)
+        {
+            stepCount=(int)sensorEvent.values[0];
+            steps.setText(stepCount+"step");
+        }*/
+        if (sensorEvent!= null){
+            float x_acceleration = sensorEvent.values[0];
+            float y_acceleration = sensorEvent.values[1];
+            float z_acceleration = sensorEvent.values[2];
+            double Magnitude = Math.sqrt(x_acceleration*x_acceleration + y_acceleration*y_acceleration + z_acceleration*z_acceleration);
+            double MagnitudeDelta = Magnitude -MagnitudePrevious;
+            MagnitudePrevious = Magnitude;
+            if (MagnitudeDelta > 4){
+                stepCount++;
+            }
+            steps.setText(stepCount);
+        }
 
     }
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        stepCount = sharedPreferences.getInt("stepCount", 0);
+    }
+    @Override
+    protected void onPause() {
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        super.onPause();
+        editor.clear();
+        editor.putInt("stepCount", stepCount);
+        editor.putFloat("Distance", Distances);
+
+        editor.apply();
+    }
+    protected void onStop() {
+        super.onStop();
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.putInt("stepCount", stepCount);
+        editor.putFloat("Distance", Distances);
+        editor.apply();
+    }
+    public float getDistanceRun(long steps){
+        float distance = (float)(steps*78)/(float)100000;
+        Utils.Distance=distance;
+        Distance.setText( Utils.Distance+"km");
+        return distance;
+    }
+
 }

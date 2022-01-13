@@ -1,5 +1,7 @@
 package com.example.runner.History;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -13,6 +15,12 @@ import android.view.ViewGroup;
 import com.example.runner.Constants;
 import com.example.runner.R;
 import com.example.runner.Utils;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class HistoryFragment extends Fragment  implements Constants {
@@ -58,6 +66,8 @@ public class HistoryFragment extends Fragment  implements Constants {
     }
 
     RecyclerView Tripe;
+    List<HistoryModel> historyModels = new ArrayList<>();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -65,14 +75,26 @@ public class HistoryFragment extends Fragment  implements Constants {
             container.removeAllViews();
         }
         // Inflate the layout for this fragment
+
       View root= inflater.inflate(R.layout.fragment_history, container, false);
         Tripe = root.findViewById(R.id.tripe);
-
-        final HistoryAdapter detailsAdapter = new HistoryAdapter(getContext(), Utils.HistoryModels);
+        loadData();
+        final HistoryAdapter detailsAdapter = new HistoryAdapter(getContext(), historyModels);
         Tripe.setLayoutManager(new GridLayoutManager(getContext(), 1));
         Tripe.setAdapter(detailsAdapter);
 
 
        return  root;
+    }
+    private void loadData() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("history list", null);
+        Type type = new TypeToken<ArrayList<HistoryModel>>() {}.getType();
+        historyModels = gson.fromJson(json, type);
+
+        if (historyModels == null) {
+            historyModels = new ArrayList<>();
+        }
     }
 }

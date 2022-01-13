@@ -42,7 +42,7 @@
                 android:layout_gravity="center"
                 android:text="8/1/22022"
                 android:textColor="@color/dark_gray"
-
+android:id="@+id/date"
                 android:textSize="@dimen/_18ssp">
 
             </TextView>
@@ -70,6 +70,7 @@
             </ImageView>
 
             <TextView
+                android:id="@+id/time_start"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

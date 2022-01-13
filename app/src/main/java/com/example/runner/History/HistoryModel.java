@@ -7,11 +7,15 @@ public class HistoryModel {
     private int Id=1;
     private double ToLatitude;
     private double ToLongitude;
-    private int TimeTotal;
+    private String TimeTotal;
     private int Steps=50;
-    private int Time=10;
+    private String Time="";
     private String Date;
     private String Distance="150";
+
+    public void setTimeTotal(String timeTotal) {
+        TimeTotal = timeTotal;
+    }
 
     public int getId() {
         return Id;
@@ -37,13 +41,7 @@ public class HistoryModel {
         ToLongitude = toLongitude;
     }
 
-    public int getTimeTotal() {
-        return TimeTotal;
-    }
 
-    public void setTimeTotal(int timeTotal) {
-        TimeTotal = timeTotal;
-    }
 
     public int getSteps() {
         return Steps;
@@ -53,11 +51,11 @@ public class HistoryModel {
         Steps = steps;
     }
 
-    public int getTime() {
+    public String getTime() {
         return Time;
     }
 
-    public void setTime(int time) {
+    public void setTime(String time) {
         Time = time;
     }
 

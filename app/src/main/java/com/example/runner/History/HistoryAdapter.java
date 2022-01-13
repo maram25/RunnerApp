@@ -49,8 +49,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         holder.Time.setText(historyModels.get(position).getTime()+"");
         holder.Step.setText(historyModels.get(position).getSteps()+"");
         holder.Distance.setText(historyModels.get(position).getDistance()+"");
+
         Utils.HistoryModels.get(position).setDistance(Utils.Distance + "");
         Utils.HistoryModels.get(position).setSteps(Utils.CountStep);
+        Utils.HistoryModels.get(position).setTimeTotal(Utils.TimeTaken);
         Utils.HistoryModels.get(position).setDate(Utils.Date);
         holder.Item.setOnClickListener(new View.OnClickListener() {
             @Override

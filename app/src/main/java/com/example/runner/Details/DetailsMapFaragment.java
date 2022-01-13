@@ -7,11 +7,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
 
 import com.example.runner.Constants;
 import com.example.runner.Home.DirectionsJSONParser;
 import com.example.runner.Home.MainActivity;
 import com.example.runner.Home.MapsModel;
+import com.example.runner.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -84,7 +86,24 @@ public class DetailsMapFaragment extends Fragment implements OnMapReadyCallback 
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         }
     };
-    TextView Time_Count,Steps,Distance;
+    TextView Time_Count,Steps,Distance,time_start,Date;
+
+
+    private GoogleMap mMap;
+
+    //current and destination location objects
+    Location myLocation=null;
+    Location destinationLocation=null;
+    protected LatLng start=null;
+    protected LatLng end=null;
+
+    //to get location permissions.
+    private final static int LOCATION_REQUEST_CODE = 23;
+    boolean locationPermission=false;
+
+    //polyline object
+    private List<Polyline> polylines=null;
+
 
     LatLng mOrigin, mDestination = null, CurrentlatLng;
     ArrayList<LatLng> points = null;
@@ -106,21 +125,36 @@ public class DetailsMapFaragment extends Fragment implements OnMapReadyCallback 
 
         Definations(root);
         Setup();
-        Actions();
+        drawRoute();
          return  root;
 
     }
 
-    private void Actions() {
-    }
+
 
     private void Setup() {
+         Time_Count.setText(Utils.TimeTaken+"");
+        Steps.setText(Utils.CountStep+"");
+        Distance.setText(Utils.Distance+"");
+        time_start.setText(Utils.Time+"");
+        Date.setText(Utils.Date+"");
+
+        ((MainActivity) getActivity()).SelectedLocation.observe(getViewLifecycleOwner(), new Observer<GetLocationModel>() {
+            @Override
+            public void onChanged(GetLocationModel locationModel) {
+                    GetAddress(locationModel);
+
+            }
+        });
+
     }
 
     private void Definations(View root) {
         Time_Count = root.findViewById(R.id.time);
         Steps = root.findViewById(R.id.stepe);
         Distance = root.findViewById(R.id.distance);
+        time_start = root.findViewById(R.id.time_start);
+        Date = root.findViewById(R.id.date);
 
     }
 
@@ -206,6 +240,22 @@ public class DetailsMapFaragment extends Fragment implements OnMapReadyCallback 
         DownloadTask downloadTask = new DownloadTask();
         // Start downloading json data from Google Directions API
         downloadTask.execute(url);
+    }
+    private void GetAddress(GetLocationModel location) {
+        Log.e("getAddress", location.getAddress() + " k ");
+        Log.e("getLng", location.getLng() + " k ");
+        Log.e("getLat", location.getLat() + " k ");
+        // String address = location.getAddress();// If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+        String address = Utils.AdressStart;// If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+
+            LatLng Loc = new LatLng(Utils.EndLat, Utils.EndLong);
+            mDestination = Loc;
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(Loc);
+            markerOptions.title(address);
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(Loc));
+            mGoogleMap.addMarker(markerOptions);
+
     }
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
 

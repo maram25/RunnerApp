@@ -11,10 +11,11 @@ public interface Constants {
 
     String SrartLat = "SrartLat";
     String StartLong = "StartLong";
-    String CountStep = "CountStep";
     String Date = "Date";
+    String Time = "Time";
     String TimeTotal = "TimeTotal";
     String Distance = "Distance";
+    String CountStep = "CountStep";
     String ENdLat = "ENdLat";
     String EndLong = "EndLong";
 

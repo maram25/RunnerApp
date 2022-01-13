@@ -10,8 +10,12 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.runner.Constants;
+import com.example.runner.Details.DetailsMapFaragment;
+import com.example.runner.Details.GetLocationModel;
+import com.example.runner.History.HistoryModel;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -29,19 +33,24 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Address;
+import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,26 +69,38 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener ,
         SensorEventListener  , Constants {
  /*   SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
     SharedPreferences.Editor editor = sharedPreferences.edit();*/
+ public MutableLiveData<GetLocationModel> SelectedLocation = new MutableLiveData<>();
+
     ConstraintLayout StartAction;
     TextView Start;
     TextView steps;
     TextView Distance;
     TextView Time;
     ImageView Stop, Resume;
+    private ArrayList<HistoryModel> historyModels;
+    LocationManager location_manager;
+
     FusedLocationProviderClient mFusedLocationClient;
     LocationRequest mLocationRequest;
     private GoogleMap mMap;
@@ -87,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleApiClient mGoogleApiClient;
     Boolean CountSensor;
     Context mContext;
+    Chronometer chronometer;
     private LatLng mCenterLatLong;
     LocationModel pickedLocation;
     LatLng mOrigin, mDestination = null, CurrentlatLng;
@@ -96,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private int stepCount = 0;
     private float Distances = 0;
 
-
+    long lastPause;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,19 +127,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 /*
         getCurrentLocation();
-*/
+*/        loadData();
+
         Definations();
         Actions();
         buildGoogleApiClient();
 
 
 
+
     }
 
+    private void StartCounter() {
+        if (lastPause != 0){
+            chronometer.setBase(chronometer.getBase() + SystemClock.elapsedRealtime() - lastPause);
+        }
+        else{
+            chronometer.setBase(SystemClock.elapsedRealtime());
+        }
 
+        chronometer.start();
+    }
     private void StartStepSensor()
     {
-
         SensorEventListener stepDetector = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
@@ -140,7 +172,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         sensorManager.registerListener(stepDetector, sensor, SensorManager.SENSOR_DELAY_NORMAL);
 
     }
-
+    private void saveData() {
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(historyModels);
+        editor.putString("history list", json);
+        editor.apply();
+    }
     @Override
     public void onBackPressed() {
 
@@ -161,18 +200,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Stop = findViewById(R.id.Stop);
         steps = findViewById(R.id.steps);
         Distance = findViewById(R.id.Distance);
-        Time = findViewById(R.id.Time);
+        chronometer = findViewById(R.id.chronometer);
+       // Time = findViewById(R.id.Time);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
     private void Actions() {
+        Resume.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                lastPause = SystemClock.elapsedRealtime();
+                chronometer.stop();
+            }
+        });
         Start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 StartAction.setVisibility(View.VISIBLE);
                 Start.setVisibility(View.GONE);
+
                 StartTimeDate();
+                StartCounter();
 
                 Log.d("StartAction", "StartAction");
                 StartStepSensor();
@@ -186,18 +235,41 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View view) {
                 Utils.Distance=Distances;
                 Utils.CountStep=stepCount;
+                Utils.TimeTaken=chronometer.toString();
+               GetLocation(new LocationModel(CurrentlatLng.latitude, CurrentlatLng.longitude));
 
-   /*
-                editor.putInt("stepCount", 0);
-                editor.putFloat("Distance", 0);*/
-
-                goToFragment(new HistoryFragment());
+                chronometer.stop();
+                chronometer.setBase(SystemClock.elapsedRealtime());
+                lastPause = 0;
+                stepCount=0;
+                for (int i = 0; i < historyModels.size(); i++) {
+                    historyModels.get(i).setDistance(Distances+"");
+                    historyModels.get(i).setSteps(stepCount);
+                    historyModels.get(i).setDate(Date);
+                    historyModels.get(i).setTime(Utils.Time);
+                }
+                saveData();
+               // goToFragment(new HistoryFragment());
+                goToFragment(new DetailsMapFaragment());
 
             }
         });
 
+
     }
 
+
+    private void loadData() {
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("history list", null);
+        Type type = new TypeToken<ArrayList<HistoryModel>>() {}.getType();
+        historyModels = gson.fromJson(json, type);
+
+        if (historyModels == null) {
+            historyModels = new ArrayList<>();
+        }
+    }
 
     private void StartTimeDate() {
         Calendar calendar = Calendar.getInstance();
@@ -213,6 +285,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.d("Date", dateCalande+"");
         Log.d("Time", TimeCalendar+"");
         Utils.Date=dateCalande;
+        Utils.Time=TimeCalendar;
     }
 
     public void goToFragment(Fragment fragment) {
@@ -454,6 +527,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     pickedLocation = new LocationModel(mLocation.getLatitude(), mLocation.getLongitude());
                     Utils.SrartLat = mLocation.getLatitude();
                     Utils.StartLong = mLocation.getLongitude();
+
+                    Utils.EndLat = mLocation.getLatitude();
+                    Utils.EndLong = mLocation.getLongitude();
                     Log.e("setLoc", mLocation.getLatitude() + " , " + mLocation.getLongitude());
 
                 } catch (Exception e) {
@@ -464,13 +540,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
 //        mMap.setMyLocationEnabled(true);
@@ -547,5 +616,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Distance.setText( Utils.Distance+"km");
         return distance;
     }
-
+    public void GetLocation(LocationModel locationModel) {
+        mCenterLatLong = new LatLng(30.0594838, 31.22344);
+        onMapReady(mMap);
+        }
 }

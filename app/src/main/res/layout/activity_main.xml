@@ -59,7 +59,7 @@
             </TextView>
         </LinearLayout>
 
-        <TextView
+    <!--    <TextView
             android:id="@+id/Time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -71,7 +71,22 @@
             android:textColor="@color/blue"
             android:textSize="@dimen/_18ssp">
 
-        </TextView>
+        </TextView>-->
+
+        <Chronometer
+            android:id="@+id/chronometer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@color/blue"
+            android:layout_marginLeft="@dimen/_15ssp"
+            android:layout_marginBottom="@dimen/_5ssp"
+            android:fontFamily="@font/noor_bold"
+            android:textSize="@dimen/_18ssp"
+            android:layout_above="@+id/start_button"
+            android:layout_centerHorizontal="true"
+            />
+
 
     </LinearLayout>
 
